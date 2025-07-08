@@ -1,0 +1,23 @@
+{
+  "name": "brain-tuner-dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gpt-assistant.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheAIDepot/brain-tuner-dashboard.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheAIDepot/brain-tuner-dashboard/issues"
+  },
+  "homepage": "https://github.com/TheAIDepot/brain-tuner-dashboard#readme",
+  "dependencies": {
+    "openai": "^5.8.3"
+  }
+}
