@@ -1,5 +1,4 @@
-const { OpenAI } = require("openai");
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const fetch = require("node-fetch");
 
 exports.handler = async (event) => {
   try {
@@ -12,25 +11,45 @@ exports.handler = async (event) => {
       };
     }
 
-    const chat = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "You are an expert brainwave frequency guide and focus coach." },
-        { role: "user", content: prompt },
-      ],
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "https://brain-tuner-dashboard.netlify.app", // required
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "mistral-7b-instruct-free",
+        messages: [
+          { role: "system", content: "You are a brain frequency expert and personalized focus coach." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 200
+      })
     });
 
-    const reply = chat.choices?.[0]?.message?.content || "⚠️ GPT returned no reply.";
+    const data = await response.json();
+
+    if (data.error) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ response: `❌ OpenRouter Error: ${data.error.message}` }),
+      };
+    }
+
+    const reply = data.choices?.[0]?.message?.content || "⚠️ No reply from model.";
 
     return {
       statusCode: 200,
       body: JSON.stringify({ response: reply }),
     };
   } catch (err) {
-    console.error("GPT function error:", err.message);
+    console.error("GPT handler error:", err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ response: "❌ Server error: " + err.message }),
     };
   }
 };
+
